@@ -29,6 +29,7 @@ export default function HomeScreen() {
 
     const { data, error } = await supabase
       .from("learning_topics")
+      
       .select("*")
       .order("created_at", { ascending: false });
 
