@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from "react";
 import { View, Text, StyleSheet, Animated } from "react-native";
+import { supabase } from "../lib/supabase";
 
 export default function SplashScreen({ navigation }) {
   const scaleAnim = useRef(new Animated.Value(0.5)).current;
@@ -19,12 +20,17 @@ export default function SplashScreen({ navigation }) {
       }),
     ]).start();
 
-    const timer = setTimeout(() => {
-      navigation.replace("Home");
+    const timer = setTimeout(async () => {
+      const { data } = await supabase.auth.getUser();
+      if (data?.user) {
+        navigation.replace("Home");
+      } else {
+        navigation.replace("Login");
+      }
     }, 2000);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [navigation]);
 
   return (
     <View style={styles.container}>
