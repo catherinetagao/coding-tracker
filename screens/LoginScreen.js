@@ -7,7 +7,10 @@ import {
   TouchableOpacity,
   Alert,
   ActivityIndicator,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { supabase } from "../lib/supabase";
 
 export default function LoginScreen({ navigation }) {
@@ -61,13 +64,18 @@ export default function LoginScreen({ navigation }) {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>
-        {isSignUp ? "Create Account" : "Sign In"}
-      </Text>
+    <KeyboardAvoidingView
+      style={styles.container}
+      behavior={Platform.OS === "ios" ? "padding" : undefined}
+    >
+      <View style={styles.header}>
+        <Text style={styles.title}>
+          {isSignUp ? "Create account to save topics" : "Sign In"}
+        </Text>
+      </View>
 
       <TextInput
-        style={styles.input}
+        style={[styles.input, isSignUp ? null : null]}
         placeholder="Email"
         value={email}
         onChangeText={setEmail}
@@ -87,16 +95,24 @@ export default function LoginScreen({ navigation }) {
       />
 
       <TouchableOpacity
-        style={styles.button}
+        style={[styles.button, loading ? styles.buttonDisabled : null]}
         onPress={isSignUp ? handleSignUp : handleSignIn}
         disabled={loading}
+        activeOpacity={0.85}
       >
         {loading ? (
           <ActivityIndicator color="#fff" />
         ) : (
-          <Text style={styles.buttonText}>
-            {isSignUp ? "Sign Up" : "Sign In"}
-          </Text>
+          <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+            <MaterialCommunityIcons
+              name={isSignUp ? "account-plus" : "login"}
+              size={18}
+              color="#fff"
+            />
+            <Text style={styles.buttonText}>
+              {isSignUp ? "Sign Up" : "Sign In"}
+            </Text>
+          </View>
         )}
       </TouchableOpacity>
 
@@ -107,6 +123,7 @@ export default function LoginScreen({ navigation }) {
           setPassword("");
         }}
         disabled={loading}
+        style={{ marginTop: 18 }}
       >
         <Text style={styles.toggleText}>
           {isSignUp
@@ -114,48 +131,53 @@ export default function LoginScreen({ navigation }) {
             : "Don't have an account? Sign Up"}
         </Text>
       </TouchableOpacity>
-    </View>
+    </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    marginTop: 0,
     padding: 20,
+    backgroundColor: "#fafafa",
     justifyContent: "center",
-    backgroundColor: "#f5f5f5",
+    alignItems: "center",
   },
-  title: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 30,
-    textAlign: "center",
-  },
+
+  header: { marginBottom: 18 },
+  headerTitleRow: { flexDirection: "row", alignItems: "center", gap: 10 },
+  title: { fontSize: 24, fontWeight: "800", color: "#111827" },
+  subtitle: { marginTop: 6, color: "#6b7280", fontSize: 13 },
+
   input: {
-    borderWidth: 1,
-    borderColor: "#ddd",
-    padding: 12,
-    marginBottom: 15,
-    borderRadius: 8,
+    borderWidth: 2,
+    borderColor: "#f4c4c4",
+    borderRadius: 12,
+    padding: 14,
     backgroundColor: "#fff",
     fontSize: 16,
+    color: "#333",
+    marginBottom: 12,
+    width: "100%",
   },
+
   button: {
-    backgroundColor: "#007AFF",
-    padding: 15,
-    borderRadius: 8,
+    backgroundColor: "#f4c4c4",
+    paddingVertical: 14,
+    paddingHorizontal: 18,
+    borderRadius: 12,
     alignItems: "center",
-    marginTop: 10,
+    justifyContent: "center",
+    elevation: 3,
   },
-  buttonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
-  },
+  buttonDisabled: { opacity: 0.6 },
+  buttonText: { color: "#fff", fontSize: 16, fontWeight: "800" },
+
   toggleText: {
-    color: "#007AFF",
+    color: "#6b7280",
     textAlign: "center",
-    marginTop: 20,
-    fontSize: 16,
+    marginTop: 6,
+    fontSize: 15,
   },
 });
